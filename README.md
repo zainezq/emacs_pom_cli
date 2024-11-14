@@ -1,5 +1,5 @@
 # TASK HANDLER WITH EMACS SUPPORT
-This is a simple C++ application that reads tasks from `.org` files, allows the user to select tasks, and starts a Pomodoro timer for focused work. Once a task is completed, it updates the task status from `TODO` to `DONE` directly within the `.org` file.
+This is a simple C++ CLI application that reads tasks from `.org` files, allows the user to select tasks, and starts a Pomodoro timer for focused work. Once a task is completed, it updates the task status from `TODO` to `DONE` directly within the `.org` file.
 
 ## Features
 - Load tasks from multiple `.org` files.

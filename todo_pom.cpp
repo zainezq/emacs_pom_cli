@@ -20,6 +20,7 @@ struct Task {
 const int WORK_DURATION = 25 * 60;  // 25 minutes
 const int BREAK_DURATION = 5 * 60;  // 5 minutes
 
+int remainingTime = WORK_DURATION;
 
 vector<Task> loadTasks(const string &filename) {
     vector<Task> tasks;
@@ -91,34 +92,42 @@ bool isInputAvailable() {
 
 
 
+
+
+
+
 // Pomodoro timer function
 void pomodoroTimer() {
     cout << "Pomodoro session started. Press 'c' to complete the task at any time.\n";
 
-    int timeLeft = WORK_DURATION;
     setRawMode(true); // Enable raw mode to capture key presses instantly
 
-    while (timeLeft > 0) {
-        cout << "Time remaining: " << timeLeft / 60 << " minutes\r";
+    // Work session loop
+    while (remainingTime > 0) {
+        cout << "Time remaining: " << remainingTime / 60 << " minutes\r";
         cout.flush();
         this_thread::sleep_for(chrono::seconds(1));
-        timeLeft--;
+        remainingTime--;
 
-        if (isInputAvailable()) {  // Check if any key is pressed
+        // Check if the user pressed 'c' to complete the task early
+        if (isInputAvailable()) {
             char ch;
-            read(STDIN_FILENO, &ch, 1);  // Read the key press
+            read(STDIN_FILENO, &ch, 1);
             if (ch == 'c' || ch == 'C') {
                 cout << "\nTask completed early!\n";
-                setRawMode(false); // Restore normal mode
+                setRawMode(false);
                 return;
             }
         }
     }
 
-    setRawMode(false); // Restore normal mode
+    // If we reach here, a full Pomodoro is completed
     cout << "\nWork session complete. Starting break...\n";
     this_thread::sleep_for(chrono::seconds(BREAK_DURATION));
-    cout << "Break over! Ready to continue.\n";
+
+    // After break, reset remaining time for the next Pomodoro
+    remainingTime = WORK_DURATION;
+    cout << "Break over! Starting another Pomodoro session...\n";
 }
 
 
@@ -127,8 +136,9 @@ void pomodoroTimer() {
 
 
 
+
 int main() {
-    vector<string> orgFiles = {"/home/zaine/master-folder/org_files/career-org/career.org"};
+    vector<string> orgFiles = {"/home/zaine/master-folder/org_files/master.org"};
 
     vector<Task> tasks;
     // This loop loads tasks from multiple files and combines them into a single list.
@@ -152,6 +162,12 @@ int main() {
         if (taskIndex > 0 && taskIndex <= tasks.size()) {
             Task &selectedTask = tasks[taskIndex - 1];
             cout << "Selected task: " << selectedTask.content << endl;
+
+            // If there’s any remaining time from the last task, carry it over
+            if (remainingTime < WORK_DURATION) {
+                cout << "Resuming previous Pomodoro with " << remainingTime / 60 << " minutes remaining.\n";
+            }
+
             pomodoroTimer();
 
             // Mark task as done
