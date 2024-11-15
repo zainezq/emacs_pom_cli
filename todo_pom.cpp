@@ -23,6 +23,8 @@ const int BREAK_DURATION = 5 * 60;  // 5 minutes
 
 // Global variable to store remaining time (in seconds)
 int remainingTime = WORK_DURATION;
+vector<string> orgFiles = {"/home/zaine/master-folder/org_files/master.org"};
+vector<Task> tasks;
 
 // ANSI Escape Codes for Styling
 const string RESET = "\033[0m";
@@ -167,21 +169,32 @@ void pomodoroTimer(int& remainingTimeForTask) {
 }
 
 
+void addTaskToLocalStorage(){
+    for (const auto &filepath : orgFiles) {
+        vector<Task> fileTasks = loadTasks(filepath);
+        tasks.insert(tasks.end(), fileTasks.begin(), fileTasks.end());
+    }
+}
+void addTaskToLocalStorage(const Task& task) {
+    for (const auto &filepath : orgFiles) {
+        ofstream file(filepath, ios_base::app); // Open file in append mode
+        file << "* TODO " << task.content << endl;
+        file.close();
+    }
+}
+
 
 
 
 int main() {
-    vector<string> orgFiles = {"/home/zaine/master-folder/org_files/master.org"};
+
     if (orgFiles.empty()) {
         cout << RED << "No .org files found in the specified directory." << RESET << endl;
         return 1;
     }
 
-    vector<Task> tasks;
-    for (const auto &filePath : orgFiles) {
-        vector<Task> fileTasks = loadTasks(filePath);
-        tasks.insert(tasks.end(), fileTasks.begin(), fileTasks.end());
-    }
+    addTaskToLocalStorage();
+
     if (tasks.empty()) {
         cout << RED << "No TODO tasks found in the specified .org file." << RESET << endl;
         return 1;
@@ -201,12 +214,27 @@ int main() {
         }
 
         int taskIndex;
-        cout << "\n" << BOLD << "Select a task to start Pomodoro (enter task number): " << RESET;
+        cout << "\n" << BOLD << "Select a task to start Pomodoro (enter task number), or 0 to add a new task: " << RESET;
         cin >> taskIndex;
-        if (taskIndex < 1 || taskIndex > tasks.size()) {
+        if (taskIndex < 0 || taskIndex > tasks.size()) {
             cout << RED << "Invalid task number. Please try again." << RESET << endl;
             continue;
         }
+        if (taskIndex == 0) {
+            // Add a new task in the org file
+            string newTask;
+            cout << BOLD << "Enter the task content: " << RESET;
+            cin.ignore();
+            getline(cin, newTask);
+            Task newTaskObj = {newTask, -1};
+            tasks.push_back(newTaskObj);
+            //reloadTasks();
+            addTaskToLocalStorage(newTaskObj);
+            tasks.clear();
+            addTaskToLocalStorage();
+            continue;
+        }
+
         if (taskIndex > 0 && taskIndex <= tasks.size()) {
             Task &selectedTask = tasks[taskIndex - 1];
             cout << GREEN << "Selected task: " << selectedTask.content << RESET << endl;
