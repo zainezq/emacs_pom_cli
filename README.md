@@ -19,7 +19,7 @@ This is a simple C++ CLI application that reads tasks from `.org` files, allows 
 
 ### Prerequisites
 - Linux-based system with a C++ compiler.
-- Change the org file path located at the top of the todo_pom.cpp file
+- Change the org file path located at the top of the todo_pom.cpp file (line 26)
 
 ### Compile and Run
 1. Clone the repository or download the code.
