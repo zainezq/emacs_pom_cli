@@ -23,7 +23,7 @@ const int BREAK_DURATION = 5 * 60;  // 5 minutes
 
 // Global variable to store remaining time (in seconds)
 int remainingTime = WORK_DURATION;
-vector<string> orgFiles = {"/home/zaine/master-folder/org_files/master.org"};
+vector<string> orgFiles = {"/home/zaine/master-folder/org_files/test.org"};
 vector<Task> tasks;
 
 // ANSI Escape Codes for Styling
