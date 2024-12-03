@@ -23,7 +23,7 @@ const int BREAK_DURATION = 5 * 60;  // 5 minutes
 
 // Global variable to store remaining time (in seconds)
 int remainingTime = WORK_DURATION;
-vector<string> orgFiles = {"/home/zaine/master-folder/org_files/test.org"};
+vector<string> orgFiles = {"/home/zaine/master-folder/org_files/todo.org"};
 vector<Task> tasks;
 
 // ANSI Escape Codes for Styling
@@ -178,7 +178,8 @@ void addTaskToLocalStorage(){
 void addTaskToLocalStorage(const Task& task) {
     for (const auto &filepath : orgFiles) {
         ofstream file(filepath, ios_base::app); // Open file in append mode
-        file << "* TODO " << task.content << endl;
+        
+        file << "** TODO " << task.content << endl;
         file.close();
     }
 }
